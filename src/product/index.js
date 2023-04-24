@@ -1,6 +1,6 @@
 const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 import { DeleteItemCommand, GetItemCommand , PutItemCommand, ScanCommand, UpdateItemCommand, QueryCommand} from "@aws-sdk/client-dynamodb";
-import ddbClient from "../ddbClient.js";
+import ddbClient from "./ddbClient";
 import { v4 as uuidv4 } from 'uuid';
 
 exports.handler = async (event) => {
