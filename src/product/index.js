@@ -46,7 +46,7 @@ exports.handler = async (event) => {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 message: `Hello, Received Event from Path ${event.path}`,
-                body: body}),
+                mess: body}),
         }
     }
     catch(err){
@@ -66,12 +66,12 @@ const getProductById = async (productId) => {
     try{
         
         const params = {
-            TableName: process.env.PRODUCT_TABLE,
+            TableName: process.env.TABLE_NAME,
             Key: marshall({id: productId})
         }
-        const {data} =  await ddbClient.send(new GetItemCommand(params));
-        console.log("Received Response : getProductById: ", data);
-        return (data) ? unmarshall(data) : null;
+        const {Item} =  await ddbClient.send(new GetItemCommand(params));
+        console.log("Received Response : getProductById: ", Item);
+        return (Item) ? unmarshall(Item) : null;
     }
     catch(err){
         console.log("Error detected in getByProductId: ", err);
@@ -84,12 +84,11 @@ const getAllProducts = async () => {
     try{
 
         const params = {
-            TableName: 'Product',
+            TableName: process.env.TABLE_NAME,
         }
-        const {data} =  await ddbClient.send(new ScanCommand(params));
-        console.log("Received Response : getAllProducts: ", data);
-        if(data===null || data == undefined) return {}
-        return data;
+        const {Items} =  await ddbClient.send(new ScanCommand(params));
+        console.log("Received Response : getAllProducts: ", Items);
+        return (Items)?Items.map((item)=> unmarshall(item)):{}
 
     }
     catch(err){
@@ -106,7 +105,7 @@ const getProductByQueryParameter = async (event) => {
         const catergory = event.queryStringParameters.catergory;
 
         const params = {
-            TableName: process.env.PRODUCT_TABLE,
+            TableName: process.env.TABLE_NAME,
             KeyConditionExpression: "id = :productId",
             FilterExpression: "contains (catergory = :catergory)",
             ExpressionAttributeValues: {
@@ -115,9 +114,9 @@ const getProductByQueryParameter = async (event) => {
             }
         };
 
-        const {data} = await ddbClient.send(new QueryCommand(params));
-        console.log("Received Response : getProductByQueryParameter: ", data);
-        return (data) ? data.map((d) => unmarshall(d)) : null;
+        const {Items} = await ddbClient.send(new QueryCommand(params));
+        console.log("Received Response : getProductByQueryParameter: ", Items);
+        return (Items) ? Items.map((d) => unmarshall(d)) : null;
     }
     catch(err){
         console.log("Error detected in getProductByQueryParameter: ", err);
@@ -131,12 +130,12 @@ const createProduct = async (event) => {
         const requestBody = JSON.parse(event.body);
         requestBody.id = uuidv4();
         const params = {
-            TableName: process.env.PRODUCT_TABLE,
+            TableName: process.env.TABLE_NAME,
             Item: requestBody? marshall(requestBody) : null
         };
-        const {data} =  await ddbClient.send(new PutItemCommand(params));
-        console.log("Received Response : createProduct: ", data);
-        return (data) ? unmarshall(data) : null;
+        const {Items} =  await ddbClient.send(new PutItemCommand(params));
+        console.log("Received Response : createProduct: ", Items);
+        return (Items) ? unmarshall(Items) : null;
 
     }
     catch(err){
@@ -149,12 +148,12 @@ const deleteProduct = async (productId) => {
     console.log("deleteProduct: ", productId);
     try{
         const params = {
-            TableName: process.env.PRODUCT_TABLE,
+            TableName: process.env.TABLE_NAME,
             Key: marshall({id: productId})
         }
-        const {data} =  await ddbClient.send(new DeleteItemCommand(params));
-        console.log("Received Response : deleteProduct: ", data);
-        return (data) ? unmarshall(data) : null;
+        const {Items} =  await ddbClient.send(new DeleteItemCommand(params));
+        console.log("Received Response : deleteProduct: ", Items);
+        return (Items) ? unmarshall(Items) : null;
 
     }
     catch(err){
@@ -171,7 +170,7 @@ const updateProduct = async (event) => {
     console.log(`updateProduct function. requestBody : "${requestBody}", objKeys: "${objKeys}"`);    
 
     const params = {
-      TableName: process.env.PRODUCT_TABLE,
+      TableName: process.env.TABLE_NAME,
       Key: marshall({ id: event.pathParameters.id }),
       UpdateExpression: `SET ${objKeys.map((_, index) => `#key${index} = :value${index}`).join(", ")}`,
       ExpressionAttributeNames: objKeys.reduce((acc, key, index) => ({
