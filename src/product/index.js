@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 exports.handler = async (event) => {
     console.log('Received Request:', JSON.stringify(event, null, 2));
-
+    let body = {}
     //TODO: switch case http routing for different http methods
     try{
         switch (event.httpMethod ) {
@@ -84,11 +84,12 @@ const getAllProducts = async () => {
     try{
 
         const params = {
-            TableName: process.env.PRODUCT_TABLE,
+            TableName: 'Product',
         }
         const {data} =  await ddbClient.send(new ScanCommand(params));
         console.log("Received Response : getAllProducts: ", data);
-        return (data) ? data.map((d) => unmarshall(d)) : null;
+        if(data===null || data == undefined) return {}
+        return data;
 
     }
     catch(err){

@@ -5,20 +5,13 @@ import { AssetCode, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { join } from 'path';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { SwnConstruct } from './database';
 
 export class AwsCdkMicroserviceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const productTable = new Table(
-      this, 'ProductTable', {
-        partitionKey: { name: 'id', type: AttributeType.STRING },
-        tableName: 'Product',
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        billingMode: BillingMode.PAY_PER_REQUEST
-      }
-    );
+    const database = new SwnConstruct(this, "Database");
 
     const nodeJsFunctionProps:NodejsFunctionProps ={
       bundling: {
@@ -26,7 +19,7 @@ export class AwsCdkMicroserviceStack extends cdk.Stack {
     },
     environment: {
       PRIMARY_KEY: 'id',
-      TABLE_NAME: productTable.tableName
+      TABLE_NAME: database.productTable.tableName
     },
     runtime: Runtime.NODEJS_14_X
   }
@@ -40,7 +33,7 @@ export class AwsCdkMicroserviceStack extends cdk.Stack {
       }
     );
     
-    productTable.grantReadWriteData(ProductFunction);
+    database.productTable.grantReadWriteData(ProductFunction);
 
     /*
     product microservice api gateway
