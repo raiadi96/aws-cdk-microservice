@@ -133,9 +133,9 @@ const createProduct = async (event) => {
             TableName: process.env.TABLE_NAME,
             Item: requestBody? marshall(requestBody) : null
         };
-        const {Items} =  await ddbClient.send(new PutItemCommand(params));
-        console.log("Received Response : createProduct: ", Items);
-        return (Items) ? unmarshall(Items) : null;
+        const message =  await ddbClient.send(new PutItemCommand(params));
+        console.log("Received Response : createProduct: ", message);
+        return message;
 
     }
     catch(err){
@@ -151,9 +151,9 @@ const deleteProduct = async (productId) => {
             TableName: process.env.TABLE_NAME,
             Key: marshall({id: productId})
         }
-        const {Items} =  await ddbClient.send(new DeleteItemCommand(params));
-        console.log("Received Response : deleteProduct: ", Items);
-        return (Items) ? unmarshall(Items) : null;
+        const message =  await ddbClient.send(new DeleteItemCommand(params));
+        console.log("Received Response : deleteProduct: ", message);
+        return message;
 
     }
     catch(err){
