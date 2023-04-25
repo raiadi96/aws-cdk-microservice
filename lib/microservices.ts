@@ -6,6 +6,7 @@ import { ITable } from "aws-cdk-lib/aws-dynamodb/index.js";
 
 
 interface SwnConstructProps{
+    orderTable: ITable;
     productTable: ITable;
     basketTable: ITable;
 }
@@ -13,13 +14,42 @@ export class SwnMicroServicesConstruct extends Construct{
 
     public readonly ProductFunction: NodejsFunction;
     public readonly BasketFunction: NodejsFunction;
+    public readonly OrderFunction: NodejsFunction;
 
     constructor(scope: Construct, id: string, props: SwnConstructProps){
         super(scope, id);
 
         this.ProductFunction = this.createProductFunction(props.productTable);
         this.BasketFunction = this.createBasketFunction(props.basketTable);
+        this.OrderFunction = this.createOrderFunction(props.orderTable);
     }
+    
+  createOrderFunction(orderTable: ITable): NodejsFunction {
+    const nodeJsFunctionProps:NodejsFunctionProps ={
+      bundling: {
+       externalModules: ['aws-sdk']
+    },
+    environment: {
+      PRIMARY_KEY: 'userName',
+      SORT_KEY: 'orderDate',
+      TABLE_NAME: orderTable.tableName
+    },
+    runtime: Runtime.NODEJS_14_X
+  }
+
+     const OrderFunction = new NodejsFunction(
+      this,
+      'OrderFunction', 
+      {
+        entry:join(__dirname, '../src/order/index.js'),
+        ...nodeJsFunctionProps
+      }
+    );
+    
+    orderTable.grantReadWriteData(OrderFunction);
+    return OrderFunction;  
+  }
+
   createBasketFunction(basketTable: ITable): NodejsFunction {
     const nodeJsFunctionProps:NodejsFunctionProps ={
       bundling: {

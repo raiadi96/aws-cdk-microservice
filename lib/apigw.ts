@@ -6,6 +6,7 @@ import { IFunction } from "aws-cdk-lib/aws-lambda";
 interface ApiGatewayConstructProps{
     productFunc: IFunction;
     basketFunc: IFunction;
+    orderFunc: IFunction;
 }
 
 export class ApiGatewayConstruct extends Construct{
@@ -68,5 +69,26 @@ export class ApiGatewayConstruct extends Construct{
           const basketWithUserNameRoute = basketRoute.addResource('{userName}');
           basketWithUserNameRoute.addMethod('GET');
           basketWithUserNameRoute.addMethod('DELETE');
+
+          
+          // order microservice api gateway
+          // root name = order
+          // GET /order
+          // GET /order/{userName}
+          // Query Parameter /order/{userName}?orderDate=2021-09-01
+    
+          const orderApiGateway = new LambdaRestApi(
+            this,
+            'OrderApiGateway',
+            {
+              restApiName: 'Order Service',
+              handler: props.orderFunc,
+              proxy: false
+            });
+
+          const orderRoute = orderApiGateway.root.addResource('order');
+          orderRoute.addMethod('GET');
+          const singleOrder = orderRoute.addResource('{userName}')
+          singleOrder.addMethod('GET'); 
     }
 }

@@ -32,10 +32,10 @@ exports.handler = async (event) => {
                 break;
             case "POST":
                 if(event.path == "/basket/checkout"){
-                    body = await checkoutBasket(JSON.parse(event));
+                    body = await checkoutBasket(event);
                 }
                 else
-                    body = await createBasket(JSON.parse(event));
+                    body = await createBasket(event);
                 break;
             case "DELETE":
                 body = await deleteBasketByUserName(event.pathParameters.userName);
@@ -99,8 +99,8 @@ const getAllBaskets = async () => {
 
 }
 
-const createBasket = async (basket) => {
-    console.log("Creating Basket with data: ", basket);
+const createBasket = async (event) => {
+    console.log("Creating Basket with data: ", event);
     try{
         const requestBody = JSON.parse(event.body);
         requestBody.id = uuidv4();
@@ -112,7 +112,7 @@ const createBasket = async (basket) => {
         console.log("Received Response : createBasket: ", message);
         return message
     }
-    catch{
+    catch(err){
         console.log("Error detected in createBasket: ", err);
         throw err;
     }

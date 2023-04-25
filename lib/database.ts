@@ -6,19 +6,40 @@ export class SwnConstruct extends Construct{
 
     public readonly productTable: ITable;
     public readonly basketTable: ITable;
+    public readonly orderTable: ITable;
     constructor(scope: Construct, id: string){
         super(scope, id);
         this.productTable = this.createProductTable();
         this.basketTable = this.createBasketTable();
+        this.orderTable = this.createOrderTable();
     }
 
-  private createBasketTable(): ITable {
-          //basket table
-          //basket PK : username 
-          //basket -- ITEMS( dictionary -> 
-          //                                Item1 {quantity, color, price, productName, productID} ,
-          //                                Item2 {quantity, color, price, productName, productID} )
+  //Order Table Dynamo DB
+  //PK: userName, SK: orderDate totalPrice, firstName, lastName, 
+  private createOrderTable(): ITable {
+    return new Table(
+      this, 'OrderTable', {
+        partitionKey: { 
+          name: 'userName', 
+          type: AttributeType.STRING 
+        },
+        sortKey: {
+          name:"orderDate",
+          type: AttributeType.STRING
+        },
+        tableName: 'Order',
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        billingMode: BillingMode.PAY_PER_REQUEST
+      }
+    );
+  }
 
+  //basket table
+  //basket PK : username 
+  //basket -- ITEMS( dictionary -> 
+  //                                Item1 {quantity, color, price, productName, productID} ,
+  //                                Item2 {quantity, color, price, productName, productID} )
+  private createBasketTable(): ITable {
           return new Table(
             this, 'BasketTable', {
               partitionKey: { name: 'userName', type: AttributeType.STRING },
