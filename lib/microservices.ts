@@ -57,7 +57,10 @@ export class SwnMicroServicesConstruct extends Construct{
     },
     environment: {
       PRIMARY_KEY: 'userName',
-      TABLE_NAME: basketTable.tableName
+      TABLE_NAME: basketTable.tableName,
+      EVENT_SOURCE : "com.swn.basket.checkoutBasket",
+      EVENT_DETAILTYPE : "CheckoutBasket",
+      EVENT_BUS_NAME : "swn-event-bus"
     },
     runtime: Runtime.NODEJS_14_X
   }

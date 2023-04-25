@@ -3,6 +3,7 @@ import { GetItemCommand, PutItemCommand, ScanCommand, QueryCommand, DeleteItemCo
 import { request } from "http";
 const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 import { v4 as uuidv4 } from 'uuid';
+import eventBridgeClient from "./eventBridgeClient.js";
 
 exports.handler = async (event) => {
     // Your code here
@@ -137,6 +138,70 @@ const deleteBasketByUserName = async (userName) => {
 
 }
 
-const checkoutBasket = async (basket) => {
+const checkoutBasket = async (event) => {
+    console.log("checkoutBasket: ", event);
+    const checkoutRequest = JSON.parse(event.body);
+    if(checkoutRequest == null || checkoutRequest.userName == null)
+        throw new Error("userName is required for checkout");
+    try
+    {
+        const basket = await getBasketByUserName(checkoutRequest.userName);
+        if(basket == null){
+            throw new Error("Basket not found for userName: " + checkoutRequest.userName);
+        }
+        var checkoutPayload = preparePayload(checkoutRequest, basket);
+        const publishEvent = await publishCheckoutEvent(checkoutPayload);
+        await deleteBasket(checkoutRequest.userName);
+    }
+    catch(err){
+        console.log("Error detected in checkoutBasket: ", err);
+        throw err;
+    }
+}
 
+const preparePayload = (checkoutRequest, basket) => {
+    console.log("preparePayload: ", checkoutRequest, basket);
+    try
+    {
+        if(basket == null || basket.items == null){
+            throw new Error("Basket is empty for userName: " + checkoutRequest.userName);
+        }
+
+        //calculate total price
+        var totalPrice = 0;
+        basket.items.forEach(item => totalPrice = totalPrice + item.price);
+        checkoutRequest.totalPrice = totalPrice;
+        console.log("checkoutRequest: ", checkoutRequest);
+
+        Object.assign(checkoutRequest, basket);
+        console.log("Final Payload checkoutRequest: ", checkoutRequest);
+        return checkoutRequest;
+    }
+    catch(err)
+    {
+        console.log("Error detected in preparePayload: ", err);
+        throw err;
+    }
+}
+
+const publishCheckoutEvent = async (checkoutPayload) => {
+    console.log("publishCheckoutEvent: ", checkoutPayload);
+    try{
+        const params = {
+            Entries: [{
+            Source: process.env.EVENT_SOURCE,
+            Detail: JSON.stringify(checkoutPayload),
+            DetailType: process.env.EVENT_DETAILTYPE,
+            Resources:[],
+            EventBusName: process.env.EVENT_BUS_NAME
+        },
+        ],
+    };
+    const message =  await eventBridgeClient.send(new PutEventsCommand(params));
+    console.log("Success, event sent; requestID:", message);
+    return message;
+    }
+    catch(err){
+        console.log("Error detected in publishCheckoutEvent: ", err);
+    }
 }

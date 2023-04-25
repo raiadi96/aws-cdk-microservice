@@ -90,5 +90,8 @@ export class ApiGatewayConstruct extends Construct{
           orderRoute.addMethod('GET');
           const singleOrder = orderRoute.addResource('{userName}')
           singleOrder.addMethod('GET'); 
+          singleOrder.addMethod('DELETE');
+          const checkoutRoute = singleOrder.addResource('checkout');
+          checkoutRoute.addMethod('POST');
     }
 }
