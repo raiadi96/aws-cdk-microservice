@@ -1,11 +1,11 @@
 import {ddbClient} from "./ddbClient.js";
 import { PutItemCommand, QueryCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
-
+const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 
 exports.handler = async (event) => {
     console.log("Received Request", JSON.stringify(event, null, 2));
-    const eventType = event['event-type'];
-    if(eventType != null || eventType != undefined){
+    const eventType = event['event-detail'];
+    if(eventType != undefined){
         await eventBridgeInvocation(event);
     }
     else{
