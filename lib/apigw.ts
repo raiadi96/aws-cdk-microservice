@@ -69,6 +69,7 @@ export class ApiGatewayConstruct extends Construct{
           const basketWithUserNameRoute = basketRoute.addResource('{userName}');
           basketWithUserNameRoute.addMethod('GET');
           basketWithUserNameRoute.addMethod('DELETE');
+          basketRoute.addResource('checkout').addMethod('POST');
 
           
           // order microservice api gateway
@@ -90,8 +91,6 @@ export class ApiGatewayConstruct extends Construct{
           orderRoute.addMethod('GET');
           const singleOrder = orderRoute.addResource('{userName}')
           singleOrder.addMethod('GET'); 
-          singleOrder.addMethod('DELETE');
-          const checkoutRoute = singleOrder.addResource('checkout');
-          checkoutRoute.addMethod('POST');
+      
     }
 }

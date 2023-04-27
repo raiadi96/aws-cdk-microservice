@@ -3,7 +3,8 @@ import { GetItemCommand, PutItemCommand, ScanCommand, QueryCommand, DeleteItemCo
 import { request } from "http";
 const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 import { v4 as uuidv4 } from 'uuid';
-import eventBridgeClient from "./eventBridgeClient.js";
+import  {eventBridgeClient}  from "./eventBridgeClient.js";
+import { PutEventsCommand } from "@aws-sdk/client-eventbridge";
 
 exports.handler = async (event) => {
     // Your code here
@@ -19,6 +20,7 @@ exports.handler = async (event) => {
 
             GET /basket/{userName}
             DELETE /basket/{userName}
+            a294e4c4-3eed-4702-adb8-39953fa4f552
           */
 
         let body = {}
@@ -151,7 +153,7 @@ const checkoutBasket = async (event) => {
         }
         var checkoutPayload = preparePayload(checkoutRequest, basket);
         const publishEvent = await publishCheckoutEvent(checkoutPayload);
-        await deleteBasket(checkoutRequest.userName);
+        await deleteBasketByUserName(checkoutRequest.userName);
     }
     catch(err){
         console.log("Error detected in checkoutBasket: ", err);
@@ -163,13 +165,13 @@ const preparePayload = (checkoutRequest, basket) => {
     console.log("preparePayload: ", checkoutRequest, basket);
     try
     {
-        if(basket == null || basket.items == null){
+        if(basket == null || basket.Items == null){
             throw new Error("Basket is empty for userName: " + checkoutRequest.userName);
         }
 
         //calculate total price
         var totalPrice = 0;
-        basket.items.forEach(item => totalPrice = totalPrice + item.price);
+        basket.Items.forEach(item => totalPrice = totalPrice + item.price);
         checkoutRequest.totalPrice = totalPrice;
         console.log("checkoutRequest: ", checkoutRequest);
 
