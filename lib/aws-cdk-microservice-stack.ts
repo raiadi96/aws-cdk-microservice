@@ -9,6 +9,7 @@ import { SwnConstruct } from './database';
 import { SwnMicroServicesConstruct } from './microservices';
 import { ApiGatewayConstruct } from './apigw';
 import { EventBusConstruct } from './eventBus';
+import {SQSConstruct} from "./sqs";
 
 export class AwsCdkMicroserviceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -28,9 +29,14 @@ export class AwsCdkMicroserviceStack extends cdk.Stack {
       orderFunc: microservices.OrderFunction
     });
 
+    const sqsQueue = new SQSConstruct(this, "SQS", {
+      consumer: microservices.OrderFunction
+    });
+
     const eventBus = new EventBusConstruct(this, "EventBus", {
       publisherFunction: microservices.BasketFunction,
-      targetFunction: microservices.OrderFunction
+      targetQueue: sqsQueue.queue
     });
+
   }
 }

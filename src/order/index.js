@@ -5,9 +5,14 @@ const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 exports.handler = async (event) => {
     console.log("Received Request", JSON.stringify(event, null, 2));
     const eventType = event['event-detail'];
-    if(eventType != undefined){
-        await eventBridgeInvocation(event);
+    if(event.Records != null){
+        await sqsInvocation(event);
     }
+    // This is no longer implemented as we have moved to Topic Queue Chaining,
+    // Target function of Backet Checkout microservice is now invoked by SQS
+    // else if(event['event-detail'] != undefined){
+    //     await eventBridgeInvocation(event);
+    // }
     else{
         await apiGatewayInvocation(event);
     }
@@ -128,4 +133,20 @@ catch(err)
     console.error("Error received in Create Order",err);
     throw err;
 }
+}
+
+async function sqsInvocation(event){
+    console.log("Received Request for SQS invocation", event);
+    try{
+        event.Records.forEach(async (record) => {
+            console.log("Received Record", record);
+            const body = JSON.parse(record.body);
+            await createOrder(body.detail);
+        });
+    }
+    catch(err)
+    {
+        console.log("Error Occurred at Order Service SQS Invocation", err);
+        throw err;
+    }
 }
