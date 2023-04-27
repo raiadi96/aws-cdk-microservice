@@ -137,16 +137,11 @@ catch(err)
 
 async function sqsInvocation(event){
     console.log("Received Request for SQS invocation", event);
-    try{
-        event.Records.forEach(async (record) => {
-            console.log("Received Record", record);
-            const body = JSON.parse(record.body);
-            await createOrder(body.detail);
-        });
-    }
-    catch(err)
-    {
-        console.log("Error Occurred at Order Service SQS Invocation", err);
-        throw err;
+    for(const record of event.Records){
+        console.log("Received Record", record);
+        const body = JSON.parse(record.body);
+        await createOrder(body.detail)
+            .then((data) => {console.log("Order Created", data);})
+            .catch((err) => {console.log("Error Occurred", err);})
     }
 }
