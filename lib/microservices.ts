@@ -4,12 +4,17 @@ import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { join } from "path";
 import { ITable } from "aws-cdk-lib/aws-dynamodb/index.js";
 
-
+/*
+constructor props for mapping tables to Lambda Function.
+*/
 interface SwnConstructProps{
     orderTable: ITable;
     productTable: ITable;
     basketTable: ITable;
 }
+/*
+Construct for creating Lambda Functions.
+*/
 export class SwnMicroServicesConstruct extends Construct{
 
     public readonly ProductFunction: NodejsFunction;
@@ -23,7 +28,12 @@ export class SwnMicroServicesConstruct extends Construct{
         this.BasketFunction = this.createBasketFunction(props.basketTable);
         this.OrderFunction = this.createOrderFunction(props.orderTable);
     }
-    
+   
+  /*
+  Code for creating Order Lambda Function.
+  DynamoDB Table:  Product
+  Function Implementation code: src/order/index.js
+  */  
   createOrderFunction(orderTable: ITable): NodejsFunction {
     const nodeJsFunctionProps:NodejsFunctionProps ={
       bundling: {
@@ -50,6 +60,11 @@ export class SwnMicroServicesConstruct extends Construct{
     return OrderFunction;  
   }
 
+  /*
+  Code for creating Basket Lambda Function.
+  DynamoDB Table:  Basket
+  Function Implementation code: src/basket/index.js
+  */
   createBasketFunction(basketTable: ITable): NodejsFunction {
     const nodeJsFunctionProps:NodejsFunctionProps ={
       bundling: {
@@ -78,6 +93,11 @@ export class SwnMicroServicesConstruct extends Construct{
     return BasketFunction;  
   }
 
+  /*
+    Code for creating Product Lambda Function.
+    DynamoDB Table:  Product
+    Function Implementation code: src/product/index.js
+  */
   createProductFunction(productTable:ITable): NodejsFunction {
     const nodeJsFunctionProps:NodejsFunctionProps ={
       bundling: {

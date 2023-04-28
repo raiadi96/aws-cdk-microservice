@@ -6,42 +6,37 @@ import { v4 as uuidv4 } from 'uuid';
 import  {eventBridgeClient}  from "./eventBridgeClient.js";
 import { PutEventsCommand } from "@aws-sdk/client-eventbridge";
 
+/*
+Handler code for Basket Lambda Function.
+*/
 exports.handler = async (event) => {
-    // Your code here
+
     console.log("Received Request", JSON.stringify(event, null, 2));
+
+    // API Handler
     try{
-
-        /*
-            basket microservice api gateway
-            root name = basket
-            GET /basket
-            POST /basket
-            POST /basket/checkout
-
-            GET /basket/{userName}
-            DELETE /basket/{userName}
-            a294e4c4-3eed-4702-adb8-39953fa4f552
-          */
-
         let body = {}
         switch(event.httpMethod){
-            case "GET":
-                if(event.pathParameters != null){
+            case "GET": 
+                if(event.pathParameters != null) // basket/{userName}
+                {
                     body = await getBasketByUserName(event.pathParameters.userName);
                 }
-                else{
+                else // basket/
+                {
                     body = await getAllBaskets();
                 }
                 break;
             case "POST":
-                if(event.path == "/basket/checkout"){
+                if(event.path == "/basket/checkout") // basket/checkout
+                {
                     body = await checkoutBasket(event);
                 }
                 else
-                    body = await createBasket(event);
+                    body = await createBasket(event); // basket/
                 break;
             case "DELETE":
-                body = await deleteBasketByUserName(event.pathParameters.userName);
+                body = await deleteBasketByUserName(event.pathParameters.userName); // basket/{userName}
                 break;
             default:
                 throw new Error(`Unsupported method "${event.httpMethod}"`);

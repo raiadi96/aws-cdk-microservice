@@ -4,9 +4,11 @@ import * as cdk from "aws-cdk-lib";
 
 export class SwnConstruct extends Construct{
 
+    // public properties for accessing the tables
     public readonly productTable: ITable;
     public readonly basketTable: ITable;
     public readonly orderTable: ITable;
+
     constructor(scope: Construct, id: string){
         super(scope, id);
         this.productTable = this.createProductTable();
@@ -14,8 +16,13 @@ export class SwnConstruct extends Construct{
         this.orderTable = this.createOrderTable();
     }
 
-  //Order Table Dynamo DB
-  //PK: userName, SK: orderDate totalPrice, firstName, lastName, 
+
+  /*
+  Dynamo DB Table : Order
+  PK: userName
+  SK: orderDate
+  Attributes : totalPrice, firstName, lastName
+  */
   private createOrderTable(): ITable {
     return new Table(
       this, 'OrderTable', {
@@ -34,11 +41,19 @@ export class SwnConstruct extends Construct{
     );
   }
 
-  //basket table
-  //basket PK : username 
-  //basket -- ITEMS( dictionary -> 
-  //                                Item1 {quantity, color, price, productName, productID} ,
-  //                                Item2 {quantity, color, price, productName, productID} )
+
+  /*
+  Dynamo DB Table : Basket
+  PK: userName
+  Attributes: dictionary of Items to be purchased
+  {
+    quantity,
+    color,
+    price,
+    productName,
+    productID
+  }
+  */
   private createBasketTable(): ITable {
           return new Table(
             this, 'BasketTable', {
@@ -50,6 +65,11 @@ export class SwnConstruct extends Construct{
           );
   }
 
+  /*
+  Dynamo DB Table : Product
+  PK: id
+  Attributes: productName, price, color, quantity
+  */
     private createProductTable() : ITable{
       return new Table(
         this, 'ProductTable', {

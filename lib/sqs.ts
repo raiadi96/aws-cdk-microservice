@@ -4,9 +4,17 @@ import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 
+
+/*
+Props for SQSConstruct for mapping Lambda Functions to corresponding SQS Queues.
+*/
 interface SQSConstructProps{
     consumer: IFunction;
 }
+
+/*
+Construct code for SQS
+*/
 export class SQSConstruct extends Construct{
 
     public readonly queue: Queue;
