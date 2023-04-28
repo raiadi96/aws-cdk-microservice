@@ -1,14 +1,21 @@
-# Welcome to your CDK TypeScript project
+# E-Commerce App using CDK
 
-This is a blank project for CDK development with TypeScript.
+This is a sample project for creating an E-Commerce backend using AWS CDK.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+This service does the following
 
-## Useful commands
+- Creates a Product
+- Deletes a Product
+- Creates a Basket with multiple Products
+- Deletes a Basket
+- Checkout a Basket
+- Read all the orders created by a user.
+- Save the order in DynamoDB
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+Uses the following resources.
+- DynamoDB
+- API Gateway
+- AWS Lambda
+- SQS
+- EventBridge
+
