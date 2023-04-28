@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "af35e6a6-ced9-4edf-a77a-99e66ae99d06",
+		"name": "CDK-E-Commerce",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Product Microservice",
+			"item": [
+				{
+					"name": "GetAllProducts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{productUrl}}product",
+							"protocol": "https",
+							"host": [
+								"ahgfaxpg20",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"prod",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateProudct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"Apple Macbook Air M1\",\n    \"description\":\"This is a Laptop\",\n    \"imageFile\":\"product_mac_air_m1.png\",\n    \"category\":\"laptop\",\n    \"price\":1099\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{productUrl}}product",
+							"protocol": "https",
+							"host": [
+								"ahgfaxpg20",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"prod",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetProductById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{productUrl}}product/{PRODUCT_ID}",
+							"protocol": "https",
+							"host": [
+								"ahgfaxpg20",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"prod",
+								"product",
+								"92385698-ff19-484a-8f86-0533f6b98587"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EditProductById",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"IPhone XR\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{productUrl}}product/{PRODUCT_ID}",
+							"protocol": "https",
+							"host": [
+								"ahgfaxpg20",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"prod",
+								"product",
+								"74629c16-c90a-420a-933b-4526f5d9d881"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteProductById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{productUrl}}product/{PRODUCT_ID}",
+							"protocol": "https",
+							"host": [
+								"ahgfaxpg20",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"prod",
+								"product",
+								"92385698-ff19-484a-8f86-0533f6b98587"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"id\", \"74629c16-c90a-420a-933b-4526f5d9d881\");"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Basket Microservice",
+			"item": [
+				{
+					"name": "GetAllBaskets",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basketUrl}}/basket/",
+							"host": [
+								"{{basketUrl}}"
+							],
+							"path": [
+								"basket",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBasket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userName\":\"aditya\",\n    \"Items\":[\n        {\n            \"quantity\":2,\n            \"color\":\"red\",\n            \"price\":950,\n            \"productId\":\"ff6a0431-0f20-47a9-bb48-7ebcfa4a15f9\",\n            \"productName\":\"IPhone XI\"    \n        },\n        {\n            \"quantity\":1,\n            \"color\":\"silver\",\n            \"price\":1099,\n            \"productId\":\"1067a89a-7f4c-4931-9688-a992daa6a844\",\n            \"productName\":\"Apple Macbook Air M1\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basketUrl}}basket/",
+							"protocol": "https",
+							"host": [
+								"hy564jxfg0",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"prod",
+								"basket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CheckoutEvent",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userName\":\"aditya\",\n    \"totalPrice\":0,\n    \"firstName\":\"aditya\",\n    \"lastName\":\"rai\",\n    \"email\":\"trickpiece@gmail.com\",\n    \"address\":\"india\",\n    \"cardInfo\":\"4321\",\n    \"paymentMethod\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basketUrl}}basket/checkout",
+							"host": [
+								"{{basketUrl}}basket"
+							],
+							"path": [
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getBasketByUserName",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basketUrl}}basket/aditya",
+							"host": [
+								"{{basketUrl}}basket"
+							],
+							"path": [
+								"aditya"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Microservice",
+			"item": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "basketUrl",
+			"value": "{Enter URL Here}",
+			"type": "default"
+		},
+		{
+			"key": "productUrl",
+			"value": "{Enter URL Here}",
+			"type": "default"
+		},
+		{
+			"key": "orderUrl",
+			"value": "{Enter URL Here}",
+			"type": "default"
+		}
+	]
+}
